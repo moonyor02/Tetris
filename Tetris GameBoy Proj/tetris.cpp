@@ -50,6 +50,7 @@ int level = 1;
 int gameSpeed = 500;  // Start speed (500ms)
 int totalLines = 0;
 
+char activeKey = '0';
 
 // The 7 Tetromino Shapes
 // 0=Empty, 1=Solid
@@ -162,6 +163,10 @@ bool isFallingBlock(int x, int y){
     
 }
 
+string getLight(char x){                   // for the lighting up the buttons
+    return ( x == activeKey ? "\x1B[7m" : "");
+}
+
 void drawboard(){
     
     cout << "\x1B[H";//ANSI esc code \x1B ESC  [2J clear screen. [H Home
@@ -203,7 +208,18 @@ void drawboard(){
         else if(y == 9)  cout << " |--------------| ";
         else if(y == 10) cout << " |    LINES     | ";
         else if(y == 11) cout << " | " << totalLines << (totalLines < 10 ? "            | " : (totalLines < 100 ? "           | " : "          | "));
+        
+        // ... your existing stats box ...
         else if(y == 12) cout << " ================ ";
+        
+        // --- NEW: STACKED CONTROLS ---
+        else if(y == 14) cout << "   [CONTROLS]     ";
+        else if(y == 15) cout << " A / D : Move     ";
+        else if(y == 16) cout << "   W   : Rotate   ";
+        else if(y == 17) cout << "   S   : Soft Drop";
+        else if(y == 18) cout << " Space : Hard Drop";
+        
+        // Make sure to update the empty space catcher to 18 spaces!
         else             cout << "                ";
         
         // --------------------------------------------
@@ -212,8 +228,21 @@ void drawboard(){
 
         cout << "\r" << endl;
     }
-    cout << "      ==== =======================" << "\r" << endl;
-    cout << "\n" << margin << " Controls: A (Left), D (Right), W (Rotate)" << "\r" << endl;
+    // The floor
+    cout << margin << "========================" << gap << " ==================" << "\r" << endl;
+
+    // The control Buttons
+    cout << "                " << getLight('w') << "+-----------+" << "\x1B[0m" << '\r' << endl ;
+    cout << "                " << getLight('w') << "|     W     |" << "\x1B[0m" << '\r' << endl ;
+    cout << "                " << getLight('w') << "+-----------+" << "\x1B[0m" << '\r' << endl ;
+
+    cout << " " << getLight('a') << "+-----------+" << "\x1B[0m" << "  " << getLight('s') << "+-----------+" << "\x1B[0m" << "  " << getLight('d') << "+-----------+" << "\x1B[0m" << gap <<getLight(' ') << "+---------------+" << "\x1B[0m" << '\r' << endl;
+    cout << " " << getLight('a') << "|     A     |" << "\x1B[0m" << "  " << getLight('s') << "|     S     |" << "\x1B[0m" << "  " << getLight('d') << "|     D     |" << "\x1B[0m" << gap <<getLight(' ') << "|   SPACE BAR   |" << "\x1B[0m" << '\r' << endl;
+    cout << " " << getLight('a') << "+-----------+" << "\x1B[0m" << "  " << getLight('s') << "+-----------+" << "\x1B[0m" << "  " << getLight('d') << "+-----------+" << "\x1B[0m" << gap <<getLight(' ') << "+---------------+" << "\x1B[0m" << '\r' << endl;
+ 
+ 
+
+   
 }
 
 void lockPiece(){ // temp piece -> main / permanent board
@@ -272,6 +301,7 @@ int main(){
 
         if (kbhit()){                  //verify the key hit
             char key = getchar();      // func to get key
+            activeKey = key;          // for visual elements
 
             if (key == 'a'){
                 
@@ -293,6 +323,16 @@ int main(){
 
             }else if (key == 'w') {          // ROTATE!
                 rotateShape();
+            }
+            else if (key == 's'){
+                if (isValidMove(blockX , blockY+1, currentPiece)){   // SOFT drop 
+                    blockY ++;
+                }
+            }
+            else if (key == ' '){
+                while(isValidMove(blockX , blockY+1, currentPiece)){   // HARD drop 
+                    blockY ++;
+                }
             }
         }
 
@@ -331,8 +371,8 @@ int main(){
             //checkLines(); // checks for full lines
 
             setShape(rand() % 7);
-            blockX = 0;
-            blockY = 5;
+            blockX = 4;
+            blockY = 0;
 
             if (!isValidMove(blockX, blockY, currentPiece)){
                 gameover = true;
