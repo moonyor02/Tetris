@@ -47,7 +47,7 @@ int currentPiece[4][4]; // temp grid to rotate / WORKSPACE
 
 int score = 0;
 int level = 1;
-int gameSpeed = 500;  // Start speed (500ms)
+int gameSpeed = 50;  // Start speed (50ms)
 int totalLines = 0;
 
 char activeKey = '0';
@@ -296,6 +296,7 @@ int main(){
     setShape(rand() % 7);
 
     bool gameover = false;
+    int timer = 0;
 
     while( !gameover ){
 
@@ -335,6 +336,7 @@ int main(){
                 }
             }
         }
+        timer ++;
 
         
         /*blockY++;                   // gravity update
@@ -344,47 +346,52 @@ int main(){
         // board[blockY][blockX]=1;  // OLD: Stamped block on board (Causes bugs)
 
 
-        if (isValidMove(blockX, blockY + 1, currentPiece)){
-            blockY++; // moving forward if safe
+        if (timer >= gameSpeed){                 // 50 x 10 = 500 ms
+            if (isValidMove(blockX, blockY + 1, currentPiece)){
+                blockY++;                       // moving forward if safe
+            }
+            else{
+                lockPiece();                   // coliding with floor / piece
+    
+                int cleared = checkLines();
+    
+                if(cleared > 0){
+                    totalLines += cleared;
+                }
+                if (totalLines % 10 == 0){
+                    level++;
+                    if (gameSpeed > 5) gameSpeed -= 5; // increases the speed
+                }
+    
+                // SCORE LOGIC (Nintendo Rules)
+                switch (cleared) {
+                    case 1: score += 40 * level; break;
+                    case 2: score += 100 * level; break;
+                    case 3: score += 300 * level; break;
+                    case 4: score += 1200 * level; break; // TETRIS!
+                }
+    
+                //checkLines(); // checks for full lines
+    
+                setShape(rand() % 7);
+                blockX = 4;
+                blockY = 0;
+    
+                if (!isValidMove(blockX, blockY, currentPiece)){
+                    gameover = true;
+                    cout << "GAME OVER" << endl;
+                }
+            }
+            timer = 0;
         }
-        else{
-            lockPiece(); // coliding with floor / piece
-
-            int cleared = checkLines();
-
-            if(cleared > 0){
-                totalLines += cleared;
-            }
-            if (totalLines % 10 == 0){
-                level++;
-                if (gameSpeed > 50) gameSpeed -= 50; // increases the speed
-            }
-
-            // SCORE LOGIC (Nintendo Rules)
-            switch (cleared) {
-                case 1: score += 40 * level; break;
-                case 2: score += 100 * level; break;
-                case 3: score += 300 * level; break;
-                case 4: score += 1200 * level; break; // TETRIS!
-            }
-
-            //checkLines(); // checks for full lines
-
-            setShape(rand() % 7);
-            blockX = 4;
-            blockY = 0;
-
-            if (!isValidMove(blockX, blockY, currentPiece)){
-                gameover = true;
-                cout << "GAME OVER" << endl;
-            }
-        }
+        
 
         drawboard();
+        activeKey = '0';
 
         // board[blockY][blockX]=0; // OLD: Erased trail (Not needed for projection)
 
-        this_thread::sleep_for(chrono::milliseconds(gameSpeed));
+        this_thread::sleep_for(chrono::milliseconds(10));
     }
     return 0;
 }
