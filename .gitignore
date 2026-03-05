@@ -3,7 +3,7 @@
 !src/
 !include/
 !Makefile
-
+!tetris_Game_Project_(terminal)/
 # Compiled Object files
 *.o
 obj/
