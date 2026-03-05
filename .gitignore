@@ -4,6 +4,7 @@
 !include/
 !Makefile
 !tetris_Game_Project_(terminal)/
+!archive/
 # Compiled Object files
 *.o
 obj/
