@@ -3,6 +3,7 @@
 #include<chrono> //for time units
 #include<cstdlib> //for system
 #include<ctime> 
+#include<cstring>
 using namespace std;
 
 //-------------------------------------
@@ -47,7 +48,7 @@ int currentPiece[4][4]; // temp grid to rotate / WORKSPACE
 
 int score = 0;
 int level = 1;
-int gameSpeed = 500;  // Start speed (500ms)
+int gameSpeed = 50;  // Start speed (50ms)
 int totalLines = 0;
 
 char activeKey = '0';
@@ -164,7 +165,7 @@ bool isFallingBlock(int x, int y){
 }
 
 string getLight(char x){                   // for the lighting up the buttons
-    return ( x == activeKey ? "\x1B[7m" : "");
+    return ( x == activeKey ? "\x1B[7m" : "");  // \x1B[7m -> Light On
 }
 
 void drawboard(){
@@ -232,7 +233,7 @@ void drawboard(){
     cout << margin << "========================" << gap << " ==================" << "\r" << endl;
 
     // The control Buttons
-    cout << "                " << getLight('w') << "+-----------+" << "\x1B[0m" << '\r' << endl ;
+    cout << "                " << getLight('w') << "+-----------+" << "\x1B[0m" << '\r' << endl ;  //\x1B[0m -> Light off
     cout << "                " << getLight('w') << "|     W     |" << "\x1B[0m" << '\r' << endl ;
     cout << "                " << getLight('w') << "+-----------+" << "\x1B[0m" << '\r' << endl ;
 
@@ -257,7 +258,7 @@ void lockPiece(){ // temp piece -> main / permanent board
     }
 }
 
-int checkLines(){
+int checkLines(){      // Deletes -> the filled lines
 
     int linesCleared = 0;
 
@@ -296,6 +297,7 @@ int main(){
     setShape(rand() % 7);
 
     bool gameover = false;
+    int timer = 0;
 
     while( !gameover ){
 
@@ -322,7 +324,20 @@ int main(){
                // if (blockX > COLM - 4) blockX = COLM - 4;      //hit the right wall at 6 (bcs 6+4 = 10)
 
             }else if (key == 'w') {          // ROTATE!
+                int temp[4][4]; 
+    
+                // 1. The Backup: Copy currentPiece into temp
+                memcpy(temp, currentPiece, sizeof(currentPiece));  // memcpy fork the 4x4 grid
+    
+                 // 2. The Action: Spin it!
                 rotateShape();
+    
+                // 3. The Guard: Did we spin into a wall?
+                if (!isValidMove(blockX, blockY, currentPiece)) { 
+        
+                // 4. The Undo: Copy temp back into currentPiece
+                memcpy(currentPiece, temp, sizeof(currentPiece));
+                }
             }
             else if (key == 's'){
                 if (isValidMove(blockX , blockY+1, currentPiece)){   // SOFT drop 
@@ -335,6 +350,10 @@ int main(){
                 }
             }
         }
+        else{
+            activeKey = '0';
+        } 
+        timer ++;
 
         
         /*blockY++;                   // gravity update
@@ -344,47 +363,60 @@ int main(){
         // board[blockY][blockX]=1;  // OLD: Stamped block on board (Causes bugs)
 
 
-        if (isValidMove(blockX, blockY + 1, currentPiece)){
-            blockY++; // moving forward if safe
+        if (timer >= gameSpeed){                 // 50 x 10 = 500 ms
+            if (isValidMove(blockX, blockY + 1, currentPiece)){
+                blockY++;                       // moving forward if safe
+            }
+            else{
+                lockPiece();                   // coliding with floor / piece
+    
+                int cleared = checkLines();
+    
+                if(cleared > 0){
+                    totalLines += cleared;
+
+                    // The Division Trick (Handles the "Tetris Skip")
+                int newLevel = totalLines / 10; 
+    
+                // The Level-Up Trigger
+                if (newLevel > level) {
+                    level = newLevel;
+                    if (gameSpeed > 5) gameSpeed -= 5; // increases the speed
+                    }
+
+                }
+                
+    
+                // SCORE LOGIC (Nintendo Rules)
+                switch (cleared) {
+                    case 1: score += 40 * level; break;
+                    case 2: score += 100 * level; break;
+                    case 3: score += 300 * level; break;
+                    case 4: score += 1200 * level; break; // TETRIS!
+                }
+    
+                //checkLines(); // checks for full lines
+    
+                setShape(rand() % 7);
+                blockX = 4;
+                blockY = 0;
+    
+                if (!isValidMove(blockX, blockY, currentPiece)){
+                    gameover = true;
+                    cout << "GAME OVER" << endl;
+                }
+            }
+            timer = 0;
         }
-        else{
-            lockPiece(); // coliding with floor / piece
-
-            int cleared = checkLines();
-
-            if(cleared > 0){
-                totalLines += cleared;
-            }
-            if (totalLines % 10 == 0){
-                level++;
-                if (gameSpeed > 50) gameSpeed -= 50; // increases the speed
-            }
-
-            // SCORE LOGIC (Nintendo Rules)
-            switch (cleared) {
-                case 1: score += 40 * level; break;
-                case 2: score += 100 * level; break;
-                case 3: score += 300 * level; break;
-                case 4: score += 1200 * level; break; // TETRIS!
-            }
-
-            //checkLines(); // checks for full lines
-
-            setShape(rand() % 7);
-            blockX = 4;
-            blockY = 0;
-
-            if (!isValidMove(blockX, blockY, currentPiece)){
-                gameover = true;
-                cout << "GAME OVER" << endl;
-            }
-        }
+        
+        
 
         drawboard();
+       
 
         // board[blockY][blockX]=0; // OLD: Erased trail (Not needed for projection)
 
-        this_thread::sleep_for(chrono::milliseconds(gameSpeed));
+        this_thread::sleep_for(chrono::milliseconds(10));
     }
     return 0;
 }
