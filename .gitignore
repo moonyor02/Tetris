@@ -1,3 +1,16 @@
 /*
-!/Tetris GameBoy Proj/
 !.gitignore
+!src/
+!include/
+!Makefile
+
+# Compiled Object files
+*.o
+obj/
+
+# The final executable
+tetris
+tetris.exe
+
+# OS generated files (like macOS folders)
+.DS_Store
