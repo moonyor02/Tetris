@@ -8,7 +8,7 @@ int blockY = 0;
 int board[ROWS][COLM] = {0};
 int currentShape = 0; // shapes from 0-6 and starts with I
 int currentPiece[4][4]; // temp grid to rotate / WORKSPACE
-bool isGameOver = true;
+bool isGameOver = false;
 bool blinkState = true;
 
 int score = 0;
