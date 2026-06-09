@@ -1,6 +1,7 @@
 #include "renderer.h"
 #include "state.h"
 #include <iostream>
+#include<iomanip>
 
 using namespace std;
 
@@ -55,26 +56,30 @@ void drawboard(){
         cout << gap;
 
 
+        
         // --- THE HUD (The Right Side Box) ---
         if(y == 3)       cout << " ================ ";
-        else if(y == 4)  cout << " |    SCORE     | ";
-        else if(y == 5)  cout << " | " << score << (score < 10 ? "            | " : (score < 100 ? "           | " : (score < 1000 ? "          | " : "         | ")));
+        else if(y == 4)  cout << " |   HIGH-SCORE   | ";
+        else if(y == 5)  cout << " |    " << setfill('0') << setw(6) << highScore << "    | ";
         else if(y == 6)  cout << " |--------------| ";
-        else if(y == 7)  cout << " |    LEVEL     | ";
-        else if(y == 8)  cout << " | " << level << (level < 10 ? "            | " : "           | ");
+        else if(y == 7)  cout << " |    SCORE     | ";
+        else if(y == 8)  cout << " | " << score << (score < 10 ? "            | " : (score < 100 ? "           | " : (score < 1000 ? "          | " : "         | ")));
         else if(y == 9)  cout << " |--------------| ";
-        else if(y == 10) cout << " |    LINES     | ";
-        else if(y == 11) cout << " | " << totalLines << (totalLines < 10 ? "            | " : (totalLines < 100 ? "           | " : "          | "));
+        else if(y == 10)  cout << " |    LEVEL     | ";
+        else if(y == 11)  cout << " | " << level << (level < 10 ? "            | " : "           | ");
+        else if(y == 12)  cout << " |--------------| ";
+        else if(y == 13) cout << " |    LINES     | ";
+        else if(y == 14) cout << " | " << totalLines << (totalLines < 10 ? "            | " : (totalLines < 100 ? "           | " : "          | "));
         
         // ... your existing stats box ...
-        else if(y == 12) cout << " ================ ";
+        else if(y == 15) cout << " ================ ";
         
         // --- NEW: STACKED CONTROLS ---
-        else if(y == 14) cout << "   [CONTROLS]     ";
-        else if(y == 15) cout << " A / D : Move     ";
-        else if(y == 16) cout << "   W   : Rotate   ";
-        else if(y == 17) cout << "   S   : Soft Drop";
-        else if(y == 18) cout << " Space : Hard Drop";
+        else if(y == 16) cout << "   [CONTROLS]     ";
+        else if(y == 17) cout << " A / D : Move     ";
+        else if(y == 18) cout << "   W   : Rotate   ";
+        else if(y == 19) cout << "   S   : Soft Drop";
+        else if(y == 20) cout << " Space : Hard Drop";
         
         // Make sure to update the empty space catcher to 18 spaces!
         else             cout << "                ";

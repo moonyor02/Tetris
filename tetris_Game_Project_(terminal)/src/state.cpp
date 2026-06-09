@@ -12,6 +12,7 @@ bool isGameOver = false;
 bool blinkState = true;
 
 int score = 0;
+int highScore = 0;
 int level = 1;
 int gameSpeed = 50;  // Start speed (50ms)
 int totalLines = 0;

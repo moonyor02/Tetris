@@ -14,6 +14,7 @@ extern bool blinkState; // The "On/Off" switch for the flashing effect
 
 // The stats
 extern int score; 
+extern int highScore;
 extern int level ;
 extern int gameSpeed ;  // Start speed (50ms)
 extern int totalLines ;

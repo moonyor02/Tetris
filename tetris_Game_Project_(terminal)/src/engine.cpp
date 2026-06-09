@@ -147,3 +147,9 @@ void update(int *timer){
     }      
 
 }
+
+void updateHighScore(int currentScore){
+    if (highScore < currentScore){
+        highScore = currentScore;
+    }
+}
