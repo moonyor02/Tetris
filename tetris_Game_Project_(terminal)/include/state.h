@@ -22,3 +22,8 @@ extern int totalLines ;
 //The UI state
 extern char activeKey; // track the buttom pressed
 extern int keyCooldown ; 
+enum AppState { MENU, PLAYING, EXITING};
+extern AppState currentState;
+extern bool hasPlayedBefore;
+extern int startingLevel; 
+extern int menuCursor;

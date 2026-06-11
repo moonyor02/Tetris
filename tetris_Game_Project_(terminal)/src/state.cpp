@@ -19,3 +19,7 @@ int totalLines = 0;
 
 char activeKey = '0'; // track the buttom pressed
 int keyCooldown = 0 ; 
+AppState currentState = MENU;
+bool hasPlayed = false;
+int startingLevel = 0;
+int menuCursor = 0;

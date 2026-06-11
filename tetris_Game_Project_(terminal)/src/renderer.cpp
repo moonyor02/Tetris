@@ -120,3 +120,50 @@ void drawboard(){
    
 }
 
+
+void drawMenu() {
+    // Clear the screen and home the cursor
+    cout << "\x1B[2J\x1B[H";
+
+    string margin = "          "; // Matches the left margin from your drawboard()
+
+    // Top buffer
+    for (int i = 0; i < 5; i++) cout << "\r" << endl;
+
+    // Title Block
+    cout << margin << "========================" << "\r" << endl;
+    cout << margin << "      TETRIS (CPP)      " << "\r" << endl;
+    cout << margin << "========================" << "\r" << endl;
+    cout << "\r" << endl;
+
+    // --- OPTION 0: New Game / Retry ---
+    cout << margin << "    ";
+    if (menuCursor == 0) cout << "\x1B[7m"; // Highlight ON
+    
+    if (hasPlayedBefore) {
+        cout << "[0] Retry Session";
+    } else {
+        cout << "[0] New Game     ";
+    }
+    
+    if (menuCursor == 0) cout << "\x1B[0m"; // Highlight OFF
+    cout << "\r" << endl << "\r" << endl;   // Double space for aesthetics
+
+    // --- OPTION 1: Settings ---
+    cout << margin << "    ";
+    if (menuCursor == 1) cout << "\x1B[7m"; 
+    cout << "[1] Settings     ";
+    if (menuCursor == 1) cout << "\x1B[0m"; 
+    cout << "\r" << endl << "\r" << endl;
+
+    // --- OPTION 2: Exit ---
+    cout << margin << "    ";
+    if (menuCursor == 2) cout << "\x1B[7m"; 
+    cout << "[2] Exit         ";
+    if (menuCursor == 2) cout << "\x1B[0m"; 
+    cout << "\r" << endl << "\r" << endl;
+
+    // Footer Controls
+    cout << margin << "========================" << "\r" << endl;
+    cout << margin << " W/S: Move | SPACE: Select " << "\r" << endl;
+}
